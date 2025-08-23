@@ -1,45 +1,56 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : Character
 {
     public Vector3 movementDir;
     public bool onCooldown;
-    public Transform playerLocation;
+    private Transform playerLocation;
+    private Animator animator;
 
     new void Start()
     {
+        animator = GetComponent<Animator>();
         base.Start(); // call the base class start
+        // Get the players position
+        playerLocation = GameObject.FindGameObjectWithTag("Player")?.transform;
+movementDir = (playerLocation.position - transform.position).normalized;     }
 
-        playerLocation = GameObject.FindGameObjectWithTag("Player").transform;
-        movementDir = (playerLocation.position - transform.position).normalized;
-    }
-
+    // Update is called once per frame
     void Update()
     {
-        if (onCooldown) return;
+        if (onCooldown) return; // don't move if on cooldown
 
         transform.position += movementDir * Time.deltaTime * moveSpeed;
-        // move towards the 🎯
-        transform.position += movementDir * Time.deltaTime * moveSpeed;
     }
-    
-        void OnTriggerEnter2D(Collider2D collision)
+
+    void OnTriggerEnter2D(Collider2D collision)
     {
+        if (onCooldown) return;
         if (collision.gameObject.tag == "Player")
         {
-          onCooldown = true; 
-          // Schedule the "ReActivate" method to be called after 1 second
-          Invoke("ReActivate", 1f); 
+            onCooldown = true; // set the cooldown
+            movementDir = Vector3.zero; // stop moving
+
+            // Get the game object we collided with
+            Character player = collision.GetComponent<Character>();
+
+            player.takeDamage(1); // BITE! 💢
+            animator.SetBool("isAttacking", true);
+            Invoke("ReActivate", 0.5f);
         }
     }
 
     void ReActivate()
     {
-      onCooldown = false;
-      playerLocation = GameObject.FindGameObjectWithTag("Player").transform;
-      movementDir = (playerLocation.position - transform.position).normalized;
+        animator.SetBool("isAttacking", false);
+        onCooldown = false;
+
+        playerLocation = GameObject.FindGameObjectWithTag("Player").transform;
+        movementDir = (playerLocation.position - transform.position).normalized;
     }
 
+    void OnBecameInvisible()
+    {
+        Destroy(gameObject);
+    }
 }

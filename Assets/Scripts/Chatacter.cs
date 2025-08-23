@@ -13,10 +13,10 @@ public class Character : MonoBehaviour
         moveSpeed = baseCharacter.moveSpeed;
     }
 
-    public void takeDamage(int damage)
+      public void takeDamage(int damage)
     {
         currentHealth -= damage;
-        Debug.Log($"{baseCharacter.characterName} currentHealth: {currentHealth}");
+        Debug.Log($"{baseCharacter.characterName} Health: {currentHealth}");
         if (currentHealth <= 0)
         {
             Destroy(gameObject);

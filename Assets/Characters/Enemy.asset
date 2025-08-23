@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Enemy
   m_EditorClassIdentifier: 
   characterName: Poop Head
-  health: 10
-  moveSpeed: 3
+  health: 5
+  moveSpeed: 6
